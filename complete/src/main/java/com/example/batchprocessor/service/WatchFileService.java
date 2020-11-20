@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Profile("!test")
 @Component
@@ -31,17 +32,20 @@ public class WatchFileService implements ApplicationRunner {
     public void run(ApplicationArguments args) throws IOException, InterruptedException {
 
         System.out.println("ApplicationRunner called");
-
         Path myDir = Paths.get(fileLocation);
 
         try {
             watcher = myDir.getFileSystem().newWatchService();
+
             myDir.register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
             while (true) {
+
+                TimeUnit.SECONDS.sleep(2);
+
                 WatchKey watchKey = watcher.take();
                 List<WatchEvent<?>> events = watchKey.pollEvents();
 
-                System.out.println("data/in folder was modified");
+                System.out.println("++++++++++ in folder was modified");
                 fileService.processFiles();
 
                 for (WatchEvent event : events) {

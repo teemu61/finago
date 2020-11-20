@@ -45,8 +45,12 @@ public class FileService {
     public void processFiles() throws IOException, JAXBException {
         List<File> xmlFileList = getXmlFileList();
         for (File file : xmlFileList) {
+            System.out.println("+++++ file: "+ file.getName() + " exists: " +file.exists() + " path: " +file.getAbsolutePath());
+
             processXmlFile(file);
         }
+        //after xml files are process delete all files in "data/in" folder
+        Arrays.stream(new File(inputDir).listFiles()).forEach(File::delete);
     }
 
     private void processXmlFile(File file) throws JAXBException, IOException {
@@ -62,7 +66,6 @@ public class FileService {
 
         if (!xmlIsValid) {
             nioService.copyErrorXml(file.getName());
-            file.delete();
             return;
         }
 
@@ -87,18 +90,13 @@ public class FileService {
                     xmlService.marshalInXml(basedir, item, pdfName, path);
                 } else {
                     System.out.println("md5 was incorrect!");
-                    File faultyPdf = new File(pdfFullPath);
-                    faultyPdf.delete();
                     String path = nioService.createErrorSubFolder(basedir, subDir);
                     nioService.copyErrorPdf(pdfName, item, getSubDirName(item));
                     xmlService.marshalErrorXml(basedir, item, pdfName, path);
                 }
             }
             nioService.copyXml(file);
-            File pdf = new File(pdfFullPath);
-            pdf.delete();
         }
-        file.delete();
     }
 
     private String getSubDirName(ReceiverType item) {
@@ -122,6 +120,7 @@ public class FileService {
         JAXBContext jaxbContext = JAXBContext.newInstance(Recs.class);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         return (Recs) jaxbUnmarshaller.unmarshal(file);
+
     }
 
     public static File[] getResourceFolderFiles(String folder) {
