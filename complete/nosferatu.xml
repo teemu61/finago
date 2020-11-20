@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<receivers>
+    <receiver>
+        <receiver_id>51</receiver_id>
+        <first_name>Rex</first_name>
+        <last_name>Steel</last_name>
+        <file>90072610.pdf</file>
+        <file_md5>e4e242be46aafefe8a1dc473a0070e0e</file_md5>
+    </receiver>
+</receivers>
